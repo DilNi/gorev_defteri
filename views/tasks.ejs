@@ -1,0 +1,202 @@
+<%- include('includes/head.ejs') %>
+<title>Görev Defteri></title>
+  </head>
+  <!-- ======= Header ======= -->
+  <header id="header" class="header fixed-top d-flex align-items-center">
+
+    <div class="d-flex align-items-center justify-content-between">
+      <a href="/" class="logo d-flex align-items-center">
+        <img src="assets\img\notebook.png" alt="">
+        <span class="d-none d-lg-block">Görev Defteri</span>
+      </a>
+
+    </div><!-- End Logo -->
+
+
+
+    <nav class="header-nav ms-auto">
+      <ul class="d-flex align-items-center">
+
+
+        <li class="nav-item dropdown">
+
+        </li><!-- End Notification Nav -->
+      </ul>
+    </nav><!-- End Icons Navigation -->
+
+  </header><!-- End Header -->
+
+
+  <body>
+    <h1>Görevler</h1>
+    <% if (message) { %>
+      <p>
+        <%= message %>
+      </p>
+      <% } %>
+        <h4>Hoş geldiniz, <%= user.username %>! <a href="/logout">Çıkış Yap</a></h4>
+
+        <section class="section">
+          <div class="row">
+            <div class="col-lg-12">
+
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">Görev Ekle</h5>
+                  <form action="/tasks" method="post">
+                    <div class="row mb-3">
+                      <label for="taskName" class="col-sm-2 col-form-label">Görev Adı</label>
+                      <div class="col-sm-10">
+                        <input type="text" class="form-control" name="taskName" id="taskName" required>
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <label for="description" class="col-sm-2 col-form-label">Görev Açıklaması</label>
+                      <div class="col-sm-10">
+                        <textarea class="form-control" style="height: 100px" name="description" id="description"
+                          rows="4" required></textarea>
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <div class="col-sm-10">
+
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label class="col-sm-2 col-form-label">Select</label>
+                      <div class="col-sm-10">
+                        <select class="form-select" aria-label="Default select example" name="priority" id="priority"
+                          required>
+                          <label for="priority">Öncelik:</label>
+                          <option selected>Öncelik</option>
+                          <option value="düşük">Düşük</option>
+                          <option value="orta">Orta</option>
+                          <option value="yüksek">Yüksek</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label class="col-sm-2 col-form-label">Görev Ekle</label>
+                      <div class="col-sm-10">
+                        <button type="submit" class="btn btn-primary rounded-pill">Görev Ekle</button>
+                      </div>
+                    </div>
+
+                  </form>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">Görevler</h5>
+                  <table class="table datatable">
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Görev Adı</th>
+                        <th scope="col">Açıklama</th>
+                        <th scope="col">Öncelik</th>
+                        <th scope="col">İşlemler</th>
+                        <th scope="col"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% tasks.forEach((task, index)=> { %>
+                        <tr>
+                          <th scope="row">
+                            <%= index + 1 %>
+                          </th>
+                          <td>
+                            <%= task.taskName %>
+                          </td>
+                          <td>
+                            <%= task.description %>
+                          </td>
+                          <td>
+                            <% if (task.priority==='yüksek' ) { %>
+                              <button type="button" class="btn btn-danger rounded-pill">Yüksek</button>
+                              <% } else if (task.priority==='orta' ) { %>
+                                <button type="button" class="btn btn-warning rounded-pill">Orta</button>
+                                <% } else { %>
+                                  <button type="button" class="btn btn-success rounded-pill">Düşük</button>
+                                  <% } %>
+                          </td>
+                          <td>
+                            <form action="/tasks/delete/<%= task._id %>" method="POST" style="display: inline;">
+                              <button type="submit" class="btn btn-danger rounded-pill">Sil</button>
+                            </form>
+
+                            <a href="#" onclick="toggleEditForm('<%= task._id %>')"
+                              class="btn btn-success rounded-pill">Güncelle</a>
+                            <div id="edit-form-<%= task._id %>" style="display: none;">
+                              <form action="/tasks/update/<%= task._id %>" method="POST">
+                                <div class="row mb-3">
+                                  <label for="updatedTaskName" class="col-sm-2 col-form-label">
+                                    Görev Adı</label>
+                                  <div class="col-sm-10">
+                                    <input type="text" class="form-control" name="taskName" id="updatedTaskName"
+                                      value="<%= task.taskName %>" required>
+                                  </div>
+                                </div>
+                                <div class="row mb-3">
+                                  <label for="updatedDescription" class="col-sm-2 col-form-label">Görev
+                                    Açıklaması</label>
+                                  <div class="col-sm-10">
+                                    <textarea class="form-control" name="description" id="updatedDescription"
+                                      style="height: 100px" required><%= task.description %></textarea>
+                                  </div>
+                                </div>
+                                <div class="row mb-3">
+                                  <label for="updatedPriority" class="col-sm-2 col-form-label">Öncelik</label>
+                                  <div class="col-sm-10">
+                                    <select class="form-select" name="priority" id="updatedPriority" required>
+                                      <option value="düşük" <%=task.priority==='düşük' ? 'selected' : '' %>>Düşük
+                                      </option>
+                                      <option value="orta" <%=task.priority==='orta' ? 'selected' : '' %>>Orta</option>
+                                      <option value="yüksek" <%=task.priority==='yüksek' ? 'selected' : '' %>>Yüksek
+                                      </option>
+                                    </select>
+                                  </div>
+                                </div>
+                                <div class="row mb-3">
+                                  <div class="col-sm-10 offset-sm-2">
+                                    <button type="submit" class="btn btn-primary rounded-pill">Kaydet</button>
+                                    <button type="button" onclick="toggleEditForm('<%= task._id %>')"
+                                      class="btn btn-danger rounded-pill">İptal</button>
+                                  </div>
+                                </div>
+                              </form>
+                            </div>
+
+                          </td>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                  </table>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <script>
+          function toggleEditForm(taskId) {
+            var form = document.getElementById('edit-form-' + taskId);
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+          }
+        </script>
+  </body>
+  <%- include('includes/foot.ejs') %>
+
+    </html>
